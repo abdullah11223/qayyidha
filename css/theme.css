@@ -1,0 +1,12 @@
+:root {
+  --felt: #0c2e1f;
+  --felt-surface: #123a27;
+  --gold: #e9c368;
+  --gold-deep: #b8862f;
+  --cream: #f4ecd8;
+  --cream-dim: rgba(244, 236, 216, 0.55);
+  --win-green: #63c98a;
+  --loss-red: #e2795a;
+  --gold-line: rgba(233, 195, 104, 0.18);
+  --btn-ink: #16260f;
+}

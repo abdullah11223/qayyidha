@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+  <title>قيّدها</title>
+  <meta name="theme-color" content="#0c2e1f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="قيّدها">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="app">
+    <!-- الشاشة الرئيسية -->
+    <section class="screen" id="screen-home"></section>
+    <!-- المباريات -->
+    <section class="screen" id="screen-matches"></section>
+    <!-- الإحصائيات -->
+    <section class="screen" id="screen-stats"></section>
+    <!-- المزيد -->
+    <section class="screen" id="screen-more"></section>
+    <!-- جلسة جديدة (شاشة كاملة تُدفع فوق البقية) -->
+    <section class="screen" id="screen-new-session"></section>
+    <!-- شاشة التسجيل -->
+    <section class="screen" id="screen-scoring"></section>
+    <!-- شاشة تفاصيل لاعب -->
+    <section class="screen" id="screen-player-detail"></section>
+
+    <nav class="tabbar" id="tabbar">
+      <button data-tab="home"></button>
+      <button data-tab="matches"></button>
+      <button data-tab="stats"></button>
+      <button data-tab="more"></button>
+    </nav>
+
+    <div class="sheet-backdrop" id="sheet-backdrop">
+      <div class="sheet" id="sheet-content"></div>
+    </div>
+
+    <div class="confirm-backdrop" id="confirm-backdrop">
+      <div class="confirm-box" id="confirm-content"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
