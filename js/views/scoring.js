@@ -115,17 +115,24 @@ export function renderScoring(el, Nav, sessionId) {
 
   function totalsHeaderHTML(reversed) {
     const t = totals();
-    return `<div class="totals-row" style="${reversed ? 'transform:rotate(180deg);' : ''}">
-      ${participants
-        .map(
-          (p) => `<div class="total-card card">
-            <div class="pname">${p.name}</div>
-            ${memberNames(p) ? `<span class="members">${memberNames(p)}</span>` : ''}
-            <div class="score" data-pid="${p.id}" data-target="${t[p.id] || 0}">${state.prevScores[p.id] ?? t[p.id] ?? 0}</div>
-          </div>`
-        )
-        .join('')}
-    </div>`;
+    const cards = participants.map(
+      (p) => `<div class="total-card card">
+        <div class="pname">${p.name}</div>
+        ${memberNames(p) ? `<span class="members">${memberNames(p)}</span>` : ''}
+        <div class="score" data-pid="${p.id}" data-target="${t[p.id] || 0}">${state.prevScores[p.id] ?? t[p.id] ?? 0}</div>
+      </div>`
+    );
+
+    const showMidDealer = GameTypes[session.gameType].isTeamBasedByDefault && !session.isFinished && cards.length === 2;
+    let inner = cards.join('');
+    if (showMidDealer) {
+      const angle = currentDealerSeatIndex() * 90;
+      inner = `${cards[0]}<div class="dealer-mid" data-dealer-mid="1" title="الموزّع - اضغط للتغيير اليدوي">
+        <span class="dealer-arrow" style="transform:rotate(${angle}deg);">↑</span>
+      </div>${cards[1]}`;
+    }
+
+    return `<div class="totals-row" style="${reversed ? 'transform:rotate(180deg);' : ''}">${inner}</div>`;
   }
 
   function animateScores() {
@@ -158,13 +165,7 @@ export function renderScoring(el, Nav, sessionId) {
 
   function dealerSectionHTML() {
     if (session.isFinished) return '';
-    if (GameTypes[session.gameType].isTeamBasedByDefault) {
-      const angle = currentDealerSeatIndex() * 90;
-      return `<div class="card dealer-arrow-wrap" id="dealer-arrow-wrap">
-        <span class="dealer-arrow" style="transform:rotate(${angle}deg);">↑</span>
-        <span class="label">الموزّع</span>
-      </div>`;
-    }
+    if (GameTypes[session.gameType].isTeamBasedByDefault) return '';
     return `<div class="objective" style="text-align:center; margin: 10px 0;">🂠 الموزّع: ${currentDealerName()}</div>`;
   }
 
@@ -260,8 +261,9 @@ export function renderScoring(el, Nav, sessionId) {
       render();
     });
 
-    const dealerWrap = el.querySelector('#dealer-arrow-wrap');
-    if (dealerWrap) dealerWrap.addEventListener('click', advanceDealerManually);
+    el.querySelectorAll('[data-dealer-mid]').forEach((node) => {
+      node.addEventListener('click', advanceDealerManually);
+    });
 
     el.querySelectorAll('[data-entry]').forEach((input) => {
       input.addEventListener('focus', () => { state.focusedId = input.dataset.entry; });

@@ -283,12 +283,21 @@ h1, h2, h3, p { margin: 0; }
 .seat .dealer-tag { display: block; font-size: 10px; color: var(--gold); font-weight: 700; }
 .seat-center svg { width: 28px; height: 28px; fill: var(--gold); }
 
-.dealer-arrow-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; cursor: pointer; }
-.dealer-arrow { font-size: 30px; color: var(--gold); transition: transform .35s cubic-bezier(.34,1.4,.64,1); display: inline-block; }
-.dealer-arrow-wrap .label { font-size: 12px; color: var(--cream-dim); }
+.dealer-arrow { font-size: 26px; color: var(--gold); transition: transform .35s cubic-bezier(.34,1.4,.64,1); display: inline-block; }
+
+.dealer-mid {
+  flex-shrink: 0;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .12s ease;
+}
+.dealer-mid:active { transform: scale(.85); }
 
 /* scoring */
-.totals-row { display: flex; gap: 10px; }
+.totals-row { display: flex; align-items: stretch; gap: 10px; }
 .total-card { flex: 1; text-align: center; }
 .total-card .pname { font-weight: 700; font-size: 14px; }
 .total-card .members { font-size: 10px; color: var(--cream-dim); display: block; margin-top: 2px; }
