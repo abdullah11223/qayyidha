@@ -48,8 +48,21 @@ export function renderScoring(el, Nav, sessionId) {
   }
 
   function currentDealerName() {
-    const idx = currentDealerSeatIndex();
-    return participants[idx] ? participants[idx].name : '-';
+    if (GameTypes[session.gameType].isTeamBasedByDefault) {
+      const idx = currentDealerSeatIndex();
+      return participants[idx] ? participants[idx].name : '-';
+    }
+    // في بنت السبيت: صاحب أعلى نقاط حاليًا هو من يوزّع (لا تناوب دوري).
+    if (!participants.length) return '-';
+    if (!rounds.length) {
+      return (participants[session.dealerStartSeat] || participants[0]).name;
+    }
+    const t = totals();
+    let leader = participants[0];
+    for (const p of participants) {
+      if ((t[p.id] || 0) > (t[leader.id] || 0)) leader = p;
+    }
+    return leader.name;
   }
 
   function advanceDealerManually() {
