@@ -66,6 +66,15 @@ export function renderMore(el, Nav) {
       <div class="chevron">${ICONS.chevronLeft}</div>
     </div>
 
+    <div class="history-row" id="install-app-row" style="margin-bottom:10px;">
+      <div class="icon-badge" style="font-size:18px;">📲</div>
+      <div class="texts">
+        <div class="t1">إضافة إلى الشاشة الرئيسية</div>
+        <div class="t2">ثبّت قيّدها كتطبيق مستقل على جوالك</div>
+      </div>
+      <div class="chevron">${ICONS.chevronLeft}</div>
+    </div>
+
     <div class="card" style="margin-top:20px;">
       <button class="btn-primary btn-danger" id="reset-btn" style="width:100%;">مسح جميع البيانات</button>
       <div class="hint" style="text-align:center;">يحذف كل اللاعبين والجلسات والنتائج نهائيًا من هذا الجهاز.</div>
@@ -74,6 +83,7 @@ export function renderMore(el, Nav) {
 
   el.querySelector('#manage-players-row').addEventListener('click', () => Nav.openPlayers());
   el.querySelector('#share-app-row').addEventListener('click', () => shareApp(Nav));
+  el.querySelector('#install-app-row').addEventListener('click', () => Nav.promptInstall());
 
   el.querySelector('#reset-btn').addEventListener('click', () => {
     Nav.showConfirm({

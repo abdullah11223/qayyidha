@@ -176,6 +176,36 @@ window.addEventListener('beforeinstallprompt', (e) => {
   showInstallBanner('android');
 });
 
+Nav.promptInstall = async function () {
+  if (isStandalone()) {
+    Nav.showConfirm({
+      title: 'التطبيق مثبت بالفعل',
+      message: 'قيّدها مثبت على جهازك ويعمل كتطبيق مستقل من الشاشة الرئيسية.',
+      actions: [{ label: 'تم' }],
+    });
+    return;
+  }
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    return;
+  }
+  if (isIOS()) {
+    Nav.showConfirm({
+      title: 'إضافة إلى الشاشة الرئيسية',
+      message: 'اضغط على زر المشاركة ⬆️ بالأسفل من سفاري، ثم اختر "إضافة إلى الشاشة الرئيسية".',
+      actions: [{ label: 'تم' }],
+    });
+    return;
+  }
+  Nav.showConfirm({
+    title: 'التثبيت غير متاح الآن',
+    message: 'افتح هذا الرابط من متصفح Chrome على جوالك لتتمكن من إضافته للشاشة الرئيسية.',
+    actions: [{ label: 'تم' }],
+  });
+};
+
 if (!isStandalone() && isIOS()) {
   setTimeout(() => showInstallBanner('ios'), 1800);
 }
