@@ -3,14 +3,15 @@ import { GameTypes, engineFor } from '../engines.js';
 import { ICONS } from '../icons.js';
 
 export function renderNewSession(el, Nav, preselectedGameType) {
+  const initialGameType = preselectedGameType || DB.getLastGameType() || 'baloot';
   const state = {
-    gameType: preselectedGameType || 'baloot',
-    targetScore: engineFor(preselectedGameType || 'baloot').defaultTargetScore,
+    gameType: initialGameType,
+    targetScore: engineFor(initialGameType).defaultTargetScore,
     selectedPlayers: [],
     teamAssignment: {}, // playerId -> 0/1
     teamNames: ['لنا', 'لهم'],
     lastShuffleSeats: [],
-    enableReverseViewByDefault: false,
+    enableReverseViewByDefault: DB.getReverseDefaultPref(),
   };
 
   function maxPlayers() {
@@ -66,6 +67,9 @@ export function renderNewSession(el, Nav, preselectedGameType) {
   }
 
   function createSessionAndStart() {
+    DB.setLastGameType(state.gameType);
+    DB.setReverseDefaultPref(state.enableReverseViewByDefault);
+
     const seatCount = GameTypes[state.gameType].isTeamBasedByDefault ? 4 : state.selectedPlayers.length;
     const dealerStartSeat = seatCount > 0 ? Math.floor(Math.random() * seatCount) : 0;
 

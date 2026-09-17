@@ -7,6 +7,7 @@ import { renderMore } from './views/more.js';
 import { renderNewSession } from './views/newSession.js';
 import { renderScoring } from './views/scoring.js';
 import { renderPlayerDetail } from './views/playerDetail.js';
+import { renderPlayers } from './views/players.js';
 
 const screens = {
   home: document.getElementById('screen-home'),
@@ -16,6 +17,7 @@ const screens = {
   'new-session': document.getElementById('screen-new-session'),
   scoring: document.getElementById('screen-scoring'),
   'player-detail': document.getElementById('screen-player-detail'),
+  players: document.getElementById('screen-players'),
 };
 
 const TAB_SCREENS = ['home', 'matches', 'stats', 'more'];
@@ -83,6 +85,9 @@ export const Nav = {
   },
   openPlayerDetail(playerId) {
     Nav.push('player-detail', (el, nav) => renderPlayerDetail(el, nav, playerId));
+  },
+  openPlayers() {
+    Nav.push('players', (el, nav) => renderPlayers(el, nav));
   },
   showSheet(renderFn) {
     const backdrop = document.getElementById('sheet-backdrop');

@@ -1,4 +1,4 @@
-const CACHE = 'qayyidha-v5';
+const CACHE = 'qayyidha-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -17,6 +17,7 @@ const ASSETS = [
   './js/views/newSession.js',
   './js/views/scoring.js',
   './js/views/playerDetail.js',
+  './js/views/players.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',

@@ -10,6 +10,11 @@ const KEYS = {
   scores: 'qayyidha_scores',
 };
 
+const PREF_KEYS = {
+  lastGameType: 'qayyidha_pref_last_game_type',
+  reverseDefault: 'qayyidha_pref_reverse_default',
+};
+
 function uid() {
   return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
 }
@@ -41,6 +46,14 @@ export const DB = {
   },
   deletePlayer(id) {
     save(KEYS.players, load(KEYS.players).filter((p) => p.id !== id));
+  },
+  renamePlayer(id, name) {
+    const players = load(KEYS.players);
+    const idx = players.findIndex((p) => p.id === id);
+    if (idx === -1) return null;
+    players[idx] = { ...players[idx], name: name.trim() };
+    save(KEYS.players, players);
+    return players[idx];
   },
 
   // ---------- Sessions ----------
@@ -140,5 +153,24 @@ export const DB = {
       participants: this.participantsForSession(s.id),
       rounds: this.roundsForSession(s.id),
     }));
+  },
+
+  // ---------- Preferences ----------
+  getLastGameType() {
+    return localStorage.getItem(PREF_KEYS.lastGameType);
+  },
+  setLastGameType(gameType) {
+    localStorage.setItem(PREF_KEYS.lastGameType, gameType);
+  },
+  getReverseDefaultPref() {
+    return localStorage.getItem(PREF_KEYS.reverseDefault) === '1';
+  },
+  setReverseDefaultPref(value) {
+    localStorage.setItem(PREF_KEYS.reverseDefault, value ? '1' : '0');
+  },
+
+  // ---------- Reset ----------
+  resetAll() {
+    localStorage.clear();
   },
 };
