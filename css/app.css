@@ -413,6 +413,8 @@ h1, h2, h3, p { margin: 0; }
 .result-row .rname { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; }
 .result-row .rscore { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .result-summary { color: var(--cream-dim); font-size: 13px; margin: 14px 0; }
+.result-actions { display: flex; flex-direction: column; gap: 10px; }
+.result-actions .btn-secondary { text-align: center; }
 
 .sheet-backdrop {
   position: fixed; inset: 0; background: rgba(0,0,0,0.55);

@@ -291,6 +291,31 @@ export function renderScoring(el, Nav, sessionId) {
     if (saveBtn) saveBtn.addEventListener('click', saveRound);
   }
 
+  function startRematch() {
+    const isTeam = GameTypes[session.gameType].isTeamBasedByDefault;
+    const seatCount = isTeam ? 4 : participants.length;
+    const dealerStartSeat = seatCount > 0 ? Math.floor(Math.random() * seatCount) : 0;
+
+    const newSession = DB.createSession({
+      gameType: session.gameType,
+      targetScore: session.targetScore,
+      dealerStartSeat,
+      reverseViewEnabledByDefault: session.reverseViewEnabledByDefault,
+    });
+
+    participants.forEach((p, index) => {
+      DB.addParticipant({
+        sessionId: newSession.id,
+        name: p.name,
+        playerIds: p.playerIds,
+        orderIndex: index,
+      });
+    });
+
+    Nav.hideSheet();
+    Nav.openScoring(newSession.id);
+  }
+
   function showGameOver() {
     Nav.showSheet((content) => {
       const t = totals();
@@ -312,10 +337,19 @@ export function renderScoring(el, Nav, sessionId) {
             })
             .join('')}
           <div class="result-summary">${session.resultSummary || ''}</div>
-          <button class="btn-primary" id="close-result-btn">تم</button>
+          <div class="result-actions">
+            <button class="btn-primary" id="rematch-btn">صكّة جديدة</button>
+            <button class="btn-secondary" id="home-btn">القائمة الرئيسية</button>
+            <button class="btn-secondary" id="view-log-btn">مشاهدة السجل</button>
+          </div>
         </div>
       `;
-      content.querySelector('#close-result-btn').addEventListener('click', () => Nav.hideSheet());
+      content.querySelector('#rematch-btn').addEventListener('click', startRematch);
+      content.querySelector('#home-btn').addEventListener('click', () => {
+        Nav.hideSheet();
+        Nav.showTab('home');
+      });
+      content.querySelector('#view-log-btn').addEventListener('click', () => Nav.hideSheet());
     });
   }
 
