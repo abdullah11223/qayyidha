@@ -79,6 +79,10 @@ export function renderMore(el, Nav) {
       <button class="btn-primary btn-danger" id="reset-btn" style="width:100%;">مسح جميع البيانات</button>
       <div class="hint" style="text-align:center;">يحذف كل اللاعبين والجلسات والنتائج نهائيًا من هذا الجهاز.</div>
     </div>
+
+    <div style="text-align:center; margin-top:28px; color:var(--cream-dim); font-size:12px;">
+      صنع بحب بواسطة بصلة 🐼
+    </div>
   `;
 
   el.querySelector('#manage-players-row').addEventListener('click', () => Nav.openPlayers());
