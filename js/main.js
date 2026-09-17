@@ -122,3 +122,55 @@ document.getElementById('sheet-backdrop').addEventListener('click', (e) => {
 
 // بدء التطبيق على الشاشة الرئيسية
 Nav.showTab('home');
+
+// بانر تشجيع التثبيت (Add to Home Screen)
+const INSTALL_HINT_KEY = 'qayyidha_install_hint_dismissed';
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+function isStandalone() {
+  return window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+}
+
+let deferredInstallPrompt = null;
+
+function showInstallBanner(kind) {
+  if (localStorage.getItem(INSTALL_HINT_KEY)) return;
+  const banner = document.getElementById('install-banner');
+  banner.innerHTML =
+    kind === 'ios'
+      ? `<span class="msg">ثبّت قيّدها على شاشتك الرئيسية: اضغط <b>مشاركة</b> ⬆️ ثم <b>إضافة إلى الشاشة الرئيسية</b></span>
+         <button id="install-dismiss">✕</button>`
+      : `<span class="msg">ثبّت قيّدها كتطبيق على جهازك لتجربة أسرع وبدون إنترنت</span>
+         <button id="install-action">تثبيت</button>
+         <button id="install-dismiss">✕</button>`;
+
+  document.getElementById('install-dismiss').addEventListener('click', () => {
+    banner.classList.remove('show');
+    localStorage.setItem(INSTALL_HINT_KEY, '1');
+  });
+  const actionBtn = document.getElementById('install-action');
+  if (actionBtn) {
+    actionBtn.addEventListener('click', async () => {
+      banner.classList.remove('show');
+      localStorage.setItem(INSTALL_HINT_KEY, '1');
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+      }
+    });
+  }
+  requestAnimationFrame(() => banner.classList.add('show'));
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBanner('android');
+});
+
+if (!isStandalone() && isIOS()) {
+  setTimeout(() => showInstallBanner('ios'), 1800);
+}

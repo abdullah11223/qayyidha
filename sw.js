@@ -1,4 +1,4 @@
-const CACHE = 'qayyidha-v1';
+const CACHE = 'qayyidha-v2';
 const ASSETS = [
   './',
   './index.html',

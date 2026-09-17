@@ -35,8 +35,28 @@ body {
   flex-direction: column;
   padding: max(20px, env(safe-area-inset-top)) 16px calc(84px + env(safe-area-inset-bottom)) 16px;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
-.screen.active { display: flex; }
+.screen.active { display: flex; animation: screenIn .32s cubic-bezier(.22,1,.36,1); }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(10px) scale(.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen.active { animation: none; }
+}
+
+/* لمسة الضغط على العناصر التفاعلية */
+button, .game-card, .history-row, .player-stat-row, .player-row [data-toggle-player] {
+  transition: transform .12s ease, opacity .12s ease;
+}
+button:active, .game-card:active, .history-row:active, .player-stat-row:active {
+  transform: scale(.96);
+  opacity: .88;
+}
+.tabbar button:active { transform: scale(.9); }
 
 h1, h2, h3, p { margin: 0; }
 
@@ -415,3 +435,38 @@ h1, h2, h3, p { margin: 0; }
 .confirm-box .ct { font-weight: 800; font-size: 16px; margin-bottom: 8px; }
 .confirm-box .cm { font-size: 13px; color: var(--cream-dim); margin-bottom: 18px; line-height: 1.6; }
 .confirm-box .actions { display: flex; flex-direction: column; gap: 8px; }
+
+/* بانر التثبيت */
+#install-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(140%);
+  width: calc(100% - 24px);
+  max-width: 456px;
+  background: var(--felt-surface);
+  border: 1px solid var(--gold-line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--cream);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  z-index: 60;
+  transition: transform .3s cubic-bezier(.22,1,.36,1);
+}
+#install-banner.show { transform: translateX(-50%) translateY(0); }
+#install-banner .msg { flex: 1; }
+#install-banner button { flex-shrink: 0; }
+#install-banner #install-dismiss { background: none; border: none; color: var(--cream-dim); font-size: 15px; cursor: pointer; padding: 2px 4px; }
+#install-banner #install-action {
+  background: var(--gold); color: var(--btn-ink); border: none;
+  border-radius: 8px; padding: 7px 12px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap;
+}
+
+/* عدّاد النقاط المتحرك */
+.total-card .score { transition: color .25s ease; }
+.total-card.pulse .score { color: var(--win-green); }

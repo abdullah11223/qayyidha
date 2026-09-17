@@ -21,9 +21,10 @@ export function renderStats(el, Nav) {
       <div>أضف لاعبين عند إنشاء أول جلسة</div>
     </div>`;
   } else {
+    const medals = ['🥇', '🥈', '🥉'];
     html += ranked
       .map((entry, index) => {
-        const isChampion = index === 0 && entry.matches > 0;
+        const medal = entry.matches > 0 && index < 3 ? medals[index] : '';
         const initial = entry.player.name.trim().charAt(0) || '؟';
         return `
         <div class="player-stat-row" data-player="${entry.player.id}">
@@ -34,7 +35,7 @@ export function renderStats(el, Nav) {
           entry.matches > 0 ? `· <span class="wr">${Math.round(entry.winRate * 100)}% فوز</span>` : ''
         }</div>
           </div>
-          ${isChampion ? '<div class="crown">👑</div>' : ''}
+          ${medal ? `<div class="crown">${medal}</div>` : ''}
         </div>`;
       })
       .join('');

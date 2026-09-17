@@ -9,7 +9,14 @@ export function renderScoring(el, Nav, sessionId) {
     inputs: {},
     focusedId: null,
     isReversedViewEnabled: false,
+    prevScores: {},
   };
+
+  function vibrate(pattern) {
+    if (navigator.vibrate) {
+      try { navigator.vibrate(pattern); } catch (e) {}
+    }
+  }
 
   let session, participants, rounds, engine;
 
@@ -75,8 +82,12 @@ export function renderScoring(el, Nav, sessionId) {
 
     state.inputs = {};
     state.focusedId = null;
+    vibrate(15);
     render();
-    if (outcome.isFinished) showGameOver();
+    if (outcome.isFinished) {
+      vibrate([30, 60, 30]);
+      showGameOver();
+    }
   }
 
   function undoLastRound() {
@@ -96,6 +107,7 @@ export function renderScoring(el, Nav, sessionId) {
     const current = parseInt(state.inputs[targetId] || '0', 10) || 0;
     state.inputs[targetId] = String(current + value);
     state.focusedId = targetId;
+    vibrate(8);
     render();
     const input = el.querySelector(`[data-entry="${targetId}"]`);
     if (input) input.focus();
@@ -109,11 +121,39 @@ export function renderScoring(el, Nav, sessionId) {
           (p) => `<div class="total-card card">
             <div class="pname">${p.name}</div>
             ${memberNames(p) ? `<span class="members">${memberNames(p)}</span>` : ''}
-            <div class="score">${t[p.id] || 0}</div>
+            <div class="score" data-pid="${p.id}" data-target="${t[p.id] || 0}">${state.prevScores[p.id] ?? t[p.id] ?? 0}</div>
           </div>`
         )
         .join('')}
     </div>`;
+  }
+
+  function animateScores() {
+    el.querySelectorAll('.score[data-target]').forEach((node) => {
+      const pid = node.dataset.pid;
+      const target = parseInt(node.dataset.target, 10) || 0;
+      const start = state.prevScores[pid] ?? target;
+      if (start === target) {
+        node.textContent = target;
+        return;
+      }
+      const card = node.closest('.total-card');
+      if (card) card.classList.add('pulse');
+      const duration = 400;
+      const startTime = performance.now();
+      function step(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        node.textContent = Math.round(start + (target - start) * eased);
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          state.prevScores[pid] = target;
+          if (card) card.classList.remove('pulse');
+        }
+      }
+      requestAnimationFrame(step);
+    });
   }
 
   function dealerSectionHTML() {
@@ -193,6 +233,7 @@ export function renderScoring(el, Nav, sessionId) {
     }
 
     wire();
+    animateScores();
   }
 
   function wire() {
