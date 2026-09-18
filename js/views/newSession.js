@@ -138,7 +138,7 @@ export function renderNewSession(el, Nav, preselectedGameType) {
 
       <div class="field-label">${playersHeaderText()}</div>
       <div class="add-player-row">
-        <input class="text-input" id="new-player-name" placeholder="اسم لاعب جديد" />
+        <input class="text-input" id="new-player-name" placeholder="اسم لاعب جديد" enterkeyhint="done" autocomplete="off" />
         <button class="btn-secondary" id="add-player-btn">إضافة</button>
       </div>
       <div id="players-list">
@@ -241,12 +241,16 @@ export function renderNewSession(el, Nav, preselectedGameType) {
     if (tsMinus) tsMinus.addEventListener('click', () => { state.targetScore = Math.max(10, state.targetScore - 10); render(); });
     if (tsPlus) tsPlus.addEventListener('click', () => { state.targetScore = Math.min(2000, state.targetScore + 10); render(); });
 
-    el.querySelector('#add-player-btn').addEventListener('click', () => {
-      const input = el.querySelector('#new-player-name');
-      const name = input.value.trim();
+    const addPlayerFromInput = () => {
+      const name = el.querySelector('#new-player-name').value.trim();
       if (!name) return;
       const player = DB.addPlayer(name);
       togglePlayer(player);
+      el.querySelector('#new-player-name').focus();
+    };
+    el.querySelector('#add-player-btn').addEventListener('click', addPlayerFromInput);
+    el.querySelector('#new-player-name').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addPlayerFromInput();
     });
 
     el.querySelectorAll('[data-toggle-player]').forEach((n) => {
