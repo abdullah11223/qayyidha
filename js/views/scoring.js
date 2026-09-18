@@ -122,8 +122,6 @@ export function renderScoring(el, Nav, sessionId) {
     state.focusedId = targetId;
     vibrate(8);
     render();
-    const input = el.querySelector(`[data-entry="${targetId}"]`);
-    if (input) input.focus();
   }
 
   function totalsHeaderHTML(reversed) {
@@ -189,7 +187,8 @@ export function renderScoring(el, Nav, sessionId) {
         .map(
           (p) => `<div class="entry-row">
             <span class="name">${p.name}</span>
-            <input type="number" inputmode="${engine.allowsNegativeInput ? 'text' : 'numeric'}" data-entry="${p.id}"
+            ${engine.allowsNegativeInput ? `<button class="sign-btn" data-sign="${p.id}" type="button">±</button>` : ''}
+            <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" data-entry="${p.id}"
               value="${state.inputs[p.id] || ''}" placeholder="0" class="${state.focusedId === p.id ? 'focused' : ''}" />
           </div>`
         )
@@ -276,6 +275,16 @@ export function renderScoring(el, Nav, sessionId) {
 
     el.querySelectorAll('[data-dealer-mid]').forEach((node) => {
       node.addEventListener('click', advanceDealerManually);
+    });
+
+    el.querySelectorAll('[data-sign]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.sign;
+        const n = parseInt(state.inputs[id] || '0', 10) || 0;
+        state.inputs[id] = String(-n);
+        state.focusedId = id;
+        render();
+      });
     });
 
     el.querySelectorAll('[data-entry]').forEach((input) => {

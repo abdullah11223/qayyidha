@@ -455,3 +455,9 @@ h1, h2, h3, p { margin: 0; }
 /* عدّاد النقاط المتحرك */
 .total-card .score { transition: color .25s ease; }
 .total-card.pulse .score { color: var(--win-green); }
+
+.entry-row .sign-btn {
+  flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(233,195,104,0.12); color: var(--gold);
+  border: 1px solid var(--gold-line); font-size: 16px; font-weight: 700; cursor: pointer;
+}
