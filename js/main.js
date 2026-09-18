@@ -49,11 +49,16 @@ function renderTabBar() {
   });
 }
 
+function setTabbarVisible(visible) {
+  document.getElementById('tabbar').style.display = visible ? 'flex' : 'none';
+  document.getElementById('app').classList.toggle('no-tabbar', !visible);
+}
+
 export const Nav = {
   showTab(tab) {
     pushedScreen = null;
     activeTab = tab;
-    document.getElementById('tabbar').style.display = 'flex';
+    setTabbarVisible(true);
     setActive(tab);
     Nav.refreshTab(tab);
     renderTabBar();
@@ -67,7 +72,7 @@ export const Nav = {
   },
   push(screenId, renderFn) {
     pushedScreen = screenId;
-    document.getElementById('tabbar').style.display = 'none';
+    setTabbarVisible(false);
     setActive(screenId);
     renderFn(screens[screenId], Nav);
   },
