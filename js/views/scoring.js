@@ -2,7 +2,10 @@ import { DB } from '../db.js';
 import { engineFor, GameTypes } from '../engines.js';
 import { ICONS } from '../icons.js';
 
-const QUICK_ADD = [10, 16, 20, 26, 30, 40, 50, 100];
+const QUICK_ADD = {
+  baloot: [4, 8, 16, 20, 26, 30, 44],
+  bintAlSebha: [-5, 5, 7, 10, 15, 20],
+};
 
 export function renderScoring(el, Nav, sessionId) {
   const state = {
@@ -195,8 +198,7 @@ export function renderScoring(el, Nav, sessionId) {
         .join('')}
       <div class="quick-add-label">إضافة سريعة</div>
       <div class="quick-add-row">
-        ${QUICK_ADD.map((v) => `<button data-qa="${v}">+${v}</button>`).join('')}
-        ${engine.allowsNegativeInput ? QUICK_ADD.map((v) => `<button data-qa="-${v}">-${v}</button>`).join('') : ''}
+        ${QUICK_ADD[session.gameType].map((v) => `<button data-qa="${v}">${v > 0 ? '+' + v : v}</button>`).join('')}
       </div>
       <button class="btn-primary" id="save-round-btn" style="margin-top:14px;">تسجيل اللفة</button>
     </div>`;
