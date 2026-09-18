@@ -241,7 +241,7 @@ export function renderScoring(el, Nav, sessionId) {
     if (state.isReversedViewEnabled) {
       const mirror = document.createElement('div');
       mirror.style.cssText =
-        'position:sticky; bottom:0; background:rgba(12,46,31,0.95); backdrop-filter:blur(8px); padding:14px 0; margin-top:10px;';
+        'margin-top:auto; position:sticky; bottom:0; background:rgba(12,46,31,0.95); backdrop-filter:blur(8px); padding:14px 0;';
       mirror.innerHTML = totalsHeaderHTML(true);
       el.appendChild(mirror);
     }
