@@ -289,9 +289,17 @@ export function renderScoring(el, Nav, sessionId) {
       });
     });
 
-    el.querySelectorAll('[data-entry]').forEach((input) => {
+    const entryInputs = Array.from(el.querySelectorAll('[data-entry]'));
+    entryInputs.forEach((input, idx) => {
       input.addEventListener('focus', () => { state.focusedId = input.dataset.entry; });
-      input.addEventListener('input', () => { state.inputs[input.dataset.entry] = input.value; });
+      input.addEventListener('input', () => {
+        state.inputs[input.dataset.entry] = input.value;
+        const digits = input.value.replace('-', '').length;
+        if (digits >= 2) {
+          const next = entryInputs[idx + 1];
+          if (next) next.focus();
+        }
+      });
     });
 
     el.querySelectorAll('[data-qa]').forEach((btn) => {
