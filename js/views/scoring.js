@@ -23,6 +23,7 @@ export function renderScoring(el, Nav, sessionId) {
   const state = {
     inputs: {},
     focusedId: null,
+    visited: new Set(),
     isReversedViewEnabled: false,
     prevScores: {},
   };
@@ -110,6 +111,7 @@ export function renderScoring(el, Nav, sessionId) {
 
     state.inputs = {};
     state.focusedId = null;
+    state.visited.clear();
     vibrate(15);
     render();
     if (outcome.isFinished) {
@@ -135,6 +137,7 @@ export function renderScoring(el, Nav, sessionId) {
     const current = parseInt(state.inputs[targetId] || '0', 10) || 0;
     state.inputs[targetId] = String(current + value);
     state.focusedId = targetId;
+    state.visited.add(targetId);
     vibrate(8);
     render();
   }
@@ -305,7 +308,10 @@ export function renderScoring(el, Nav, sessionId) {
 
     const entryInputs = Array.from(el.querySelectorAll('[data-entry]'));
     entryInputs.forEach((input, idx) => {
-      input.addEventListener('focus', () => { state.focusedId = input.dataset.entry; });
+      input.addEventListener('focus', () => {
+        state.focusedId = input.dataset.entry;
+        state.visited.add(input.dataset.entry);
+      });
       input.addEventListener('input', () => {
         const clean = normalizeDigits(input.value);
         if (clean !== input.value) input.value = clean;
@@ -313,7 +319,11 @@ export function renderScoring(el, Nav, sessionId) {
         const digits = clean.replace('-', '').length;
         if (digits >= 2) {
           const next = entryInputs[idx + 1];
-          if (next) next.focus();
+          if (next) {
+            next.focus();
+          } else if (entryInputs.slice(0, -1).every((i) => state.visited.has(i.dataset.entry))) {
+            saveRound();
+          }
         }
       });
     });
