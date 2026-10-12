@@ -53,8 +53,22 @@
   <script type="module" src="js/main.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
+      const hadController = !!navigator.serviceWorker.controller;
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        const active = document.querySelector('.screen.active');
+        const onTab = active && /^screen-(home|matches|stats|more)$/.test(active.id);
+        const typing = document.activeElement && document.activeElement.tagName === 'INPUT';
+        if (!hadController || reloaded || !onTab || typing) return;
+        reloaded = true;
+        location.reload();
+      });
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
+        navigator.serviceWorker.register('sw.js').then((reg) => {
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') reg.update().catch(() => {});
+          });
+        }).catch(() => {});
       });
     }
   </script>

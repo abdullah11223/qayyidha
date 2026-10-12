@@ -461,3 +461,15 @@ h1, h2, h3, p { margin: 0; }
   background: rgba(233,195,104,0.12); color: var(--gold);
   border: 1px solid var(--gold-line); font-size: 16px; font-weight: 700; cursor: pointer;
 }
+
+/* شريط فوق لوحة الأرقام (التالي / تسجيل اللفة) */
+.kb-bar {
+  position: fixed; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: 100%; max-width: 480px; display: none; gap: 10px;
+  padding: 10px 14px; z-index: 80;
+  background: rgba(12,46,31,0.97); border-top: 1px solid var(--gold-line);
+  backdrop-filter: blur(10px);
+}
+.kb-bar.show { display: flex; }
+.kb-bar .btn-primary { flex: 2; padding: 12px; width: auto; }
+.kb-bar .btn-secondary { flex: 1; padding: 12px; font-size: 15px; }

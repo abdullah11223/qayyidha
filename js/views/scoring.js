@@ -7,7 +7,19 @@ const QUICK_ADD = {
   bintAlSebha: [-5, 5, 7, 10, 15, 20],
 };
 
+function normalizeDigits(raw) {
+  return raw
+    .replace(/[\u0660-\u0669\u06F0-\u06F9]/g, (d) => {
+      const c = d.charCodeAt(0);
+      return String(c <= 0x0669 ? c - 0x0660 : c - 0x06f0);
+    })
+    .replace(/[^0-9-]/g, '')
+    .replace(/(?!^)-/g, '');
+}
+
 export function renderScoring(el, Nav, sessionId) {
+  if (el._kbCleanup) el._kbCleanup();
+
   const state = {
     inputs: {},
     focusedId: null,
@@ -249,6 +261,8 @@ export function renderScoring(el, Nav, sessionId) {
 
     wire();
     animateScores();
+    el.appendChild(kbBar);
+    updateKbBar();
   }
 
   function wire() {
@@ -293,8 +307,10 @@ export function renderScoring(el, Nav, sessionId) {
     entryInputs.forEach((input, idx) => {
       input.addEventListener('focus', () => { state.focusedId = input.dataset.entry; });
       input.addEventListener('input', () => {
-        state.inputs[input.dataset.entry] = input.value;
-        const digits = input.value.replace('-', '').length;
+        const clean = normalizeDigits(input.value);
+        if (clean !== input.value) input.value = clean;
+        state.inputs[input.dataset.entry] = clean;
+        const digits = clean.replace('-', '').length;
         if (digits >= 2) {
           const next = entryInputs[idx + 1];
           if (next) next.focus();
@@ -371,6 +387,59 @@ export function renderScoring(el, Nav, sessionId) {
       content.querySelector('#view-log-btn').addEventListener('click', () => Nav.hideSheet());
     });
   }
+
+  // لوحة الأرقام في آيفون ما فيها زر إدخال، فنعرض شريطًا فوقها: التالي / تسجيل اللفة
+  const kbBar = document.createElement('div');
+  kbBar.className = 'kb-bar';
+  kbBar.innerHTML = `<button type="button" class="btn-secondary" id="kb-next">التالي</button>
+    <button type="button" class="btn-primary" id="kb-save">تسجيل اللفة</button>`;
+  const kbNext = kbBar.querySelector('#kb-next');
+  const kbSave = kbBar.querySelector('#kb-save');
+  const entryList = () => Array.from(el.querySelectorAll('[data-entry]'));
+
+  function positionKbBar() {
+    const vv = window.visualViewport;
+    const offset = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
+    kbBar.style.bottom = offset + 'px';
+  }
+  function updateKbBar() {
+    const list = entryList();
+    const idx = list.indexOf(document.activeElement);
+    kbBar.classList.toggle('show', idx !== -1);
+    kbNext.style.display = idx !== -1 && idx < list.length - 1 ? '' : 'none';
+    if (idx !== -1) positionKbBar();
+  }
+  const onFocusIn = () => {
+    updateKbBar();
+    const active = document.activeElement;
+    setTimeout(() => {
+      if (active && active.isConnected) active.scrollIntoView({ block: 'center' });
+    }, 300);
+  };
+  const onFocusOut = () => setTimeout(updateKbBar, 150);
+  kbBar.addEventListener('mousedown', (e) => e.preventDefault());
+  kbNext.addEventListener('click', () => {
+    const list = entryList();
+    const idx = list.findIndex((i) => i.dataset.entry === state.focusedId);
+    if (list[idx + 1]) list[idx + 1].focus();
+  });
+  kbSave.addEventListener('click', saveRound);
+  el.addEventListener('focusin', onFocusIn);
+  el.addEventListener('focusout', onFocusOut);
+  const vv = window.visualViewport;
+  if (vv) {
+    vv.addEventListener('resize', positionKbBar);
+    vv.addEventListener('scroll', positionKbBar);
+  }
+  el._kbCleanup = () => {
+    el.removeEventListener('focusin', onFocusIn);
+    el.removeEventListener('focusout', onFocusOut);
+    if (vv) {
+      vv.removeEventListener('resize', positionKbBar);
+      vv.removeEventListener('scroll', positionKbBar);
+    }
+    kbBar.remove();
+  };
 
   load();
   state.isReversedViewEnabled = session.reverseViewEnabledByDefault;
